@@ -15,7 +15,6 @@ interface ICalendarWeek {
 type CalendarWeeks = ICalendarWeek[];
 
 export function Calendar() {
-
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1);
   });
@@ -46,7 +45,7 @@ export function Calendar() {
       .reverse();
 
     const lastDayInCurrentMonth = currentDate.set("date", currentDate.daysInMonth());
-    const weekIndexOfLastDay = lastDayInCurrentMonth.get("date");
+    const weekIndexOfLastDay = lastDayInCurrentMonth.get("day");
     const nextMonthArray = Array.from({ length: 7 - (weekIndexOfLastDay + 1) })
       .map((_, i) => {
         return lastDayInCurrentMonth.add(i + 1, "day");
