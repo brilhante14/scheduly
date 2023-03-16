@@ -1,10 +1,17 @@
 import React from 'react';
+import "./App.css";
+import "./globals.css";
+import { Schedule } from './pages/Schedule';
 
 function App() {
   return (
-    <h1>
-      Hello World
-    </h1>
+    <div className='page-container'>
+      <h1>
+        Scheduly
+      </h1>
+
+      <Schedule />
+    </div>
   );
 }
 
