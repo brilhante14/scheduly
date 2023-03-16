@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { CaretLeft, CaretRight } from "phosphor-react";
 import { useMemo, useState } from "react";
 import { getWeekDays } from "../../utils/get-week-days";
+import "./styles.css"
 
 interface ICalendarWeek {
   week: number;
@@ -79,11 +80,11 @@ export function Calendar() {
   }, [currentDate]);
 
   return (
-    <div>
-      <div>
-        <p>{currentMonth} <span>{currentYear}</span></p>
+    <div className="calendar-container">
+      <div className="calendar-header">
+        <p className="calendar-title">{currentMonth} <span>{currentYear}</span></p>
 
-        <div>
+        <div className="calendar-actions">
           <button onClick={handlePreviousMonth} title="Mês anterior">
             <CaretLeft />
           </button>
@@ -94,7 +95,7 @@ export function Calendar() {
         </div>
       </div>
 
-      <table>
+      <table className="calendar-body">
         <thead>
           <tr>
             {shortWeekDays.map(weekDay => (
@@ -108,6 +109,7 @@ export function Calendar() {
               {days.map(({ date, disabled }) => (
                 <td key={date.toString()}>
                   <button
+                    className="calendar-day"
                     onClick={() => { }}
                     disabled={disabled}
                   >
