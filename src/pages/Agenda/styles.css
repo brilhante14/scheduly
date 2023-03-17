@@ -1,0 +1,108 @@
+.agenda-container {
+  width: 540px;
+  margin: 1.5rem;
+  padding: 0;
+  display: flex;
+  gap: 0.5rem;
+
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.agenda-scheduleButton {
+  padding: 0.75rem;
+  border: none;
+  align-self: flex-end;
+
+  background-color: #323238;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.agenda-scheduleButton:hover {
+  background-color: #505059;
+}
+
+.agenda-scheduleButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  position: relative;
+  top: 3px;
+}
+
+.agenda-searchBar {
+  outline: none;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  height: 37px;
+}
+
+.agenda-orderContainer {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.agenda-orderContainer button {
+  padding: 0.45rem;
+  border: none;
+  font-weight: 700;
+
+  background-color: #323238;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.agenda-orderContainer button:hover {
+  background-color: #505059;
+}
+
+.agenda-list {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.agenda-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #202024;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  line-height: 160%;
+}
+
+.agenda-itemButtons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.agenda-itemButtons button {
+  all: unset;
+  cursor: pointer;
+  padding: 0.15rem;
+  border-radius: 6px;
+}
+
+.agenda-itemButtons button:hover {
+  opacity: 0.5;
+}
+
+.agenda-itemButtons button:focus {
+  box-shadow: 0 0 0 2px #E1E1E6;
+}
+
+.agenda-itemButtons svg {
+  width: 1rem;
+  height: 1rem;
+}
