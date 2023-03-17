@@ -1,7 +1,6 @@
-import React from 'react';
+import { Outlet } from 'react-router-dom';
 import "./App.css";
 import "./globals.css";
-import { Schedule } from './pages/Schedule';
 
 function App() {
   return (
@@ -10,7 +9,7 @@ function App() {
         Scheduly
       </h1>
 
-      <Schedule />
+      <Outlet />
     </div>
   );
 }
