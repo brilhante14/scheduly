@@ -1,0 +1,9 @@
+
+.schedule-container {
+  margin: 1.5rem;
+  padding: 0;
+  display: grid;
+  max-width: 100%;
+  position: relative;
+  grid-template-columns: 1fr 280px;
+}
