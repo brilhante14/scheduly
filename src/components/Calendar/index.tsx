@@ -14,7 +14,11 @@ interface ICalendarWeek {
 
 type CalendarWeeks = ICalendarWeek[];
 
-export function Calendar() {
+interface ICalendarProps {
+  handleSelectingDateTime: (date: Date) => void;
+}
+
+export function Calendar({ handleSelectingDateTime }: ICalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1);
   });
@@ -57,7 +61,6 @@ export function Calendar() {
         date,
         disabled:
           date.endOf("day").isBefore(new Date())
-        // Inserir datas agendadas
       })),
       ...nextMonthArray.map(date => ({ date, disabled: true })),
     ];
@@ -109,7 +112,7 @@ export function Calendar() {
                 <td key={date.toString()}>
                   <button
                     className="calendar-day"
-                    onClick={() => { }}
+                    onClick={() => handleSelectingDateTime(date.toDate())}
                     disabled={disabled}
                   >
                     {date.get("date")}
