@@ -21,7 +21,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
   const [scheduleForm, setScheduleForm] = useState<IMeeting>(editInfo ? editInfo : {
     id: uuidv4(),
     title: "",
-    startDate: new Date(),
+    startDate: null,
     endDate: null,
   });
 
@@ -29,7 +29,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
     return meetingsArray.some(meeting => date.isBefore(meeting.endDate) && date.isAfter(meeting.startDate));
   }
 
-  const isAtLeastADayBeforeStart = (date: Dayjs) => {
+  const isBeforeStart = (date: Dayjs) => {
     return date.isBefore(scheduleForm.startDate, "day");
   }
 
@@ -41,6 +41,10 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
     );
   }
 
+  const overlappingAnotherAgenda = (date: Dayjs) => {
+    return meetingsArray.some(meeting => dayjs(scheduleForm.startDate).isBefore(meeting.startDate) && date.isAfter(meeting.endDate));
+  }
+
   const shouldThrowErrorOnDateStart: TimePickerProps<Dayjs>['shouldDisableTime'] = (
     value,
     view,
@@ -50,37 +54,47 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
     value,
     view,
   ) => (
-    isAtLeastADayBeforeStart(value) ||
     (view === "hours" && isOnSameDayThanStart(value)) ||
-    (view === "minutes" && checkMeetingConflicts(value))
+    (view === "minutes" && (checkMeetingConflicts(value) || overlappingAnotherAgenda(value)))
   );
 
   function scheduleAMeeting() {
-    const storage = localStorage.getItem("meetings");
-    let storedMeetings = storage ? JSON.parse(storage) : [];
-    storedMeetings.push(scheduleForm);
+    if (editInfo) {
+      const index = meetingsArray.findIndex(meeting => meeting.id === editInfo.id);
+      meetingsArray[index] = scheduleForm;
+    }
+    else {
+      meetingsArray.push(scheduleForm);
+    }
 
-    localStorage.setItem("meetings", JSON.stringify(storedMeetings));
+    localStorage.setItem("meetings", JSON.stringify(meetingsArray));
 
     handleCloseModal();
   }
 
   const errorMessage = (error: DateTimeValidationError) => {
     switch (error) {
-      case 'shouldDisableTime-hours': {
-        return 'Selecione um valor após a data de início.';
+      case "shouldDisableDate":
+      case "shouldDisableTime-hours": {
+        return "Selecione um valor após a data de início.";
       }
-      case 'shouldDisableTime-minutes': {
-        return 'Esta data possui um conflito na agenda.';
+      case "shouldDisableTime-minutes": {
+        return "Esta data possui um conflito na agenda.";
       }
-      case 'disablePast': {
-        return 'Selecione uma data no futuro.';
+      case "disablePast": {
+        return "Selecione uma data no futuro.";
+      }
+      case "invalidDate": {
+        return "Data inválida.";
       }
       default: {
-        return '';
+        return "";
       }
     }
   };
+
+  const isSubmitDisabled = !scheduleForm.title || !!dateEndError || !!dateStartError ||
+    !dayjs(scheduleForm.endDate).isValid() || !dayjs(scheduleForm.startDate).isValid();
 
   return (
     <div className="confirmSchedule-container">
@@ -117,6 +131,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
           value={dayjs(scheduleForm.endDate)}
           onChange={(value) => setScheduleForm(prevState => ({ ...prevState, endDate: value?.toDate() || null }))}
           shouldDisableTime={shouldThrowErrorOnDateEnd}
+          shouldDisableDate={isBeforeStart}
           onError={(newError) => setDateEndError(newError)}
           slotProps={{
             textField: {
@@ -130,7 +145,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
 
           <button
             type="submit"
-            disabled={!scheduleForm.title || !!dateEndError || !!dateStartError}
+            disabled={isSubmitDisabled}
           >
             Confirmar
           </button>
