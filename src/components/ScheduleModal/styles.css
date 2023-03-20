@@ -1,12 +1,14 @@
 .confirmSchedule-container {
-  background-color: rgba(0, 0, 0, 0.7);
   width: 100vw;
   height: 100vh;
   z-index: 0;
+  
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  position: absolute;
+  
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .confirmSchedule-form{
@@ -15,25 +17,28 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
-
   max-width: 540px;
-  margin: 1.5rem auto 0;
+
   display: flex;
   flex-direction: column;
+
+  margin: 1.5rem auto 0;
   gap: 1rem;
-  background-color: #A9A9B2;
   padding: 2rem;
   border-radius: 6px;
+
+  background-color: #A9A9B2;
   color: #121214;
 }  
     
 .confirmSchedule-header{
   display: flex;
   align-items: center;
+  
   gap: 1rem;
-
   padding-bottom: 1.5rem;
   margin-bottom: 0.5rem;
+  
   border-bottom: 1px solid #323238;
 }
 
