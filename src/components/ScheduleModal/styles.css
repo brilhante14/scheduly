@@ -69,3 +69,7 @@
 .confirmSchedule-formActions button[type=submit]:hover {
   background-color: #00875F;
 }
+
+.confirmSchedule-formActions button:disabled {
+  opacity: 0.7;
+}

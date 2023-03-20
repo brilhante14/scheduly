@@ -1,19 +1,22 @@
 import { TextField } from "@mui/material";
-import { TimePickerProps } from "@mui/x-date-pickers";
+import { DateTimeValidationError, TimePickerProps } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { v4 as uuidv4 } from 'uuid';
 import dayjs, { Dayjs } from "dayjs";
 import { CalendarBlank } from "phosphor-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { IMeeting } from "../../pages/Agenda";
 
 import "./styles.css";
 
 interface IScheduleModalProps {
+  meetingsArray: IMeeting[];
   handleCloseModal: () => void;
 }
 
-export function ScheduleModal({ handleCloseModal }: IScheduleModalProps) {
+export function ScheduleModal({ meetingsArray, handleCloseModal }: IScheduleModalProps) {
+  const [dateStartError, setDateStartError] = useState<DateTimeValidationError | null>(null);
+  const [dateEndError, setDateEndError] = useState<DateTimeValidationError | null>(null);
   const [scheduleForm, setScheduleForm] = useState<IMeeting>({
     id: uuidv4(),
     title: "",
@@ -21,18 +24,35 @@ export function ScheduleModal({ handleCloseModal }: IScheduleModalProps) {
     endDate: null,
   });
 
-  const disableBeforeStart = (date: Dayjs) => {
-    return date.isBefore(scheduleForm.startDate, "day");
-  };
+  const checkMeetingConflicts = (date: Dayjs) => {
+    return meetingsArray.some(meeting => date.isBefore(meeting.endDate) && date.isAfter(meeting.startDate));
+  }
 
-  const shouldDisableTime: TimePickerProps<Dayjs>['shouldDisableTime'] = (
+  const isAtLeastADayBeforeStart = (date: Dayjs) => {
+    return date.isBefore(scheduleForm.startDate, "day");
+  }
+
+  const isOnSameDayThanStart = (date: Dayjs) => {
+    return date.isSame(scheduleForm.startDate, "day") && (
+      date.hour() < dayjs(scheduleForm.startDate).get("hour") || (
+        date.hour() === dayjs(scheduleForm.startDate).get("hour") && date.minute() < dayjs(scheduleForm.startDate).get("minute")
+      )
+    );
+  }
+
+  const shouldThrowErrorOnDateStart: TimePickerProps<Dayjs>['shouldDisableTime'] = (
     value,
     view,
   ) => (
-    value.isSame(scheduleForm.startDate, "day") &&
-    ((view === "hours" && value.hour() < dayjs(scheduleForm.startDate).get("hour")) ||
-      ((value.hour() === dayjs(scheduleForm.startDate).get("hour")) && value.minute() < dayjs(scheduleForm.startDate).get("minute")))
-    // (view === 'minutes' && value.minute() < dayjs(scheduleForm.startDate).get("minute"))
+    view === "minutes" && checkMeetingConflicts(value)
+  );
+
+  const shouldThrowErrorOnDateEnd: TimePickerProps<Dayjs>['shouldDisableTime'] = (
+    value,
+    view,
+  ) => (
+    isAtLeastADayBeforeStart(value) ||
+    (view === "hours" && isOnSameDayThanStart(value)) || (view === "minutes" && checkMeetingConflicts(value))
   );
 
   function scheduleAMeeting() {
@@ -45,12 +65,29 @@ export function ScheduleModal({ handleCloseModal }: IScheduleModalProps) {
     handleCloseModal();
   }
 
+  const errorMessage = (error: DateTimeValidationError) => {
+    switch (error) {
+      case 'shouldDisableTime-hours': {
+        return 'Selecione um valor após a data de início.';
+      }
+      case 'shouldDisableTime-minutes': {
+        return 'Esta data possui um conflito na agenda.';
+      }
+      case 'disablePast': {
+        return 'Selecione uma data no futuro.';
+      }
+      default: {
+        return '';
+      }
+    }
+  };
+
   return (
     <div className="confirmSchedule-container">
       <form className="confirmSchedule-form" onSubmit={scheduleAMeeting}>
         <div className="confirmSchedule-header">
           <CalendarBlank />
-          Marque seu agendamento
+          Preencha todos os campos
         </div>
 
         <TextField
@@ -65,8 +102,13 @@ export function ScheduleModal({ handleCloseModal }: IScheduleModalProps) {
           value={dayjs(scheduleForm.startDate)}
           onChange={(value) => setScheduleForm(prevState => ({ ...prevState, startDate: value?.toDate() || null }))}
           disablePast
-        // shouldDisableDate={afterStart}
-        // shouldDisableTime={shouldDisableTime}
+          shouldDisableTime={shouldThrowErrorOnDateStart}
+          onError={(newError) => setDateStartError(newError)}
+          slotProps={{
+            textField: {
+              helperText: errorMessage(dateStartError),
+            },
+          }}
         />
 
         <DateTimePicker
@@ -74,14 +116,24 @@ export function ScheduleModal({ handleCloseModal }: IScheduleModalProps) {
           ampm={false}
           value={dayjs(scheduleForm.endDate)}
           onChange={(value) => setScheduleForm(prevState => ({ ...prevState, endDate: value?.toDate() || null }))}
-          shouldDisableTime={shouldDisableTime}
-          shouldDisableDate={disableBeforeStart}
+          shouldDisableTime={shouldThrowErrorOnDateEnd}
+          onError={(newError) => setDateEndError(newError)}
+          slotProps={{
+            textField: {
+              helperText: errorMessage(dateEndError),
+            },
+          }}
         />
 
         <div className="confirmSchedule-formActions">
           <button type="button" onClick={handleCloseModal}>Cancelar</button>
 
-          <button type="submit">Confirmar</button>
+          <button
+            type="submit"
+            disabled={!scheduleForm.title || !!dateEndError || !!dateStartError}
+          >
+            Confirmar
+          </button>
         </div>
       </form>
     </div>
