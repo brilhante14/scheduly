@@ -12,12 +12,13 @@ import "./styles.css";
 interface IScheduleModalProps {
   meetingsArray: IMeeting[];
   handleCloseModal: () => void;
+  editInfo: IMeeting | null;
 }
 
-export function ScheduleModal({ meetingsArray, handleCloseModal }: IScheduleModalProps) {
+export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: IScheduleModalProps) {
   const [dateStartError, setDateStartError] = useState<DateTimeValidationError | null>(null);
   const [dateEndError, setDateEndError] = useState<DateTimeValidationError | null>(null);
-  const [scheduleForm, setScheduleForm] = useState<IMeeting>({
+  const [scheduleForm, setScheduleForm] = useState<IMeeting>(editInfo ? editInfo : {
     id: uuidv4(),
     title: "",
     startDate: new Date(),
@@ -43,16 +44,15 @@ export function ScheduleModal({ meetingsArray, handleCloseModal }: IScheduleModa
   const shouldThrowErrorOnDateStart: TimePickerProps<Dayjs>['shouldDisableTime'] = (
     value,
     view,
-  ) => (
-    view === "minutes" && checkMeetingConflicts(value)
-  );
+  ) => view === "minutes" && checkMeetingConflicts(value);
 
   const shouldThrowErrorOnDateEnd: TimePickerProps<Dayjs>['shouldDisableTime'] = (
     value,
     view,
   ) => (
     isAtLeastADayBeforeStart(value) ||
-    (view === "hours" && isOnSameDayThanStart(value)) || (view === "minutes" && checkMeetingConflicts(value))
+    (view === "hours" && isOnSameDayThanStart(value)) ||
+    (view === "minutes" && checkMeetingConflicts(value))
   );
 
   function scheduleAMeeting() {

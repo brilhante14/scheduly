@@ -17,6 +17,7 @@ export function Agenda() {
   const storage = localStorage.getItem("meetings");
 
   const [meetings, setMeetings] = useState<IMeeting[]>([]);
+  const [meetingToEdit, setMeetingToEdit] = useState<IMeeting | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortingBy, setSortingBy] = useState<"title" | "dateStart" | "dateEnd">("title");
   const [search, setSearch] = useState("");
@@ -33,11 +34,6 @@ export function Agenda() {
     setMeetings(meetingsStored);
   }, [storage]);
 
-  function searchMeetings(e: React.ChangeEvent<HTMLInputElement>) {
-    // setMeetings(meetingsStored;
-    setSearch(e.target.value);
-  }
-
   function removeAMeeting(id: string) {
     const storage = localStorage.getItem("meetings");
     let storedMeetings = storage ? JSON.parse(storage) : [];
@@ -46,6 +42,12 @@ export function Agenda() {
 
     setMeetings(storedMeetings);
     localStorage.setItem("meetings", JSON.stringify(storedMeetings));
+  }
+
+  function openEditModal(meeting: IMeeting) {
+    setMeetingToEdit(meeting);
+
+    setIsModalOpen(true);
   }
 
   return (
@@ -61,7 +63,7 @@ export function Agenda() {
       <input
         className="agenda-searchBar"
         placeholder="Pesquise um agendamento..."
-        onChange={searchMeetings}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
       <div className="agenda-orderContainer">
@@ -98,7 +100,7 @@ export function Agenda() {
                 </span>
                 <span> {dayjs(meeting.startDate).format("DD/MM/YY[ - ]HH:mm")} | {dayjs(meeting.endDate).format("DD/MM/YY[ - ]HH:mm")} </span>
                 <div className="agenda-itemButtons">
-                  <button><PencilSimple /></button>
+                  <button onClick={() => openEditModal(meeting)}><PencilSimple /></button>
                   <button onClick={() => removeAMeeting(meeting.id)}><Trash /></button>
                 </div>
               </div>
@@ -106,7 +108,16 @@ export function Agenda() {
           })}
       </div>
 
-      {isModalOpen && (<ScheduleModal meetingsArray={meetings} handleCloseModal={() => setIsModalOpen(false)} />)}
+      {isModalOpen && (
+        <ScheduleModal
+          editInfo={meetingToEdit}
+          meetingsArray={meetings}
+          handleCloseModal={() => {
+            setMeetingToEdit(null);
+            setIsModalOpen(false);
+          }}
+        />
+      )}
     </main>
   );
 }
