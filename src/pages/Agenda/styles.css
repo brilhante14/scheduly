@@ -64,6 +64,14 @@
   background-color: #505059;
 }
 
+.agenda-orderContainer .selected {
+  background-color: #00875F;
+}
+
+.agenda-orderContainer .selected:hover {
+  background-color: #00875F;
+}
+
 .agenda-list {
   margin-top: 0.75rem;
   display: grid;
@@ -74,13 +82,25 @@
 .agenda-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
   width: 100%;
-  background-color: #202024;
-  color: #fff;
+  max-width: 640px;
   padding: 0.75rem;
   border-radius: 6px;
   font-size: 0.875rem;
-  line-height: 160%;
+
+  /* text-over */
+  
+  background-color: #202024;
+  color: #fff;
+}
+
+.agenda-item span {
+  flex: 33%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .agenda-itemButtons {

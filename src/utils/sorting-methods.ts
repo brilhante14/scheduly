@@ -6,9 +6,9 @@ export function sortingByTitle(a: IMeeting, b: IMeeting) {
 }
 
 export function sortingByDateAsc(a: IMeeting, b: IMeeting) {
-  return dayjs(a.start).isAfter(b.start) ? 1 : -1;
+  return dayjs(a.startDate).isAfter(b.startDate) ? 1 : -1;
 }
 
 export function sortingByDateDesc(a: IMeeting, b: IMeeting) {
-  return dayjs(a.start).isBefore(b.start) ? 1 : -1;
+  return dayjs(a.startDate).isBefore(b.startDate) ? 1 : -1;
 }

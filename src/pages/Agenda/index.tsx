@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { PencilSimple, PlusCircle, Trash } from "phosphor-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { ScheduleModal } from "../../components/ScheduleModal";
 import { sortingByDateAsc, sortingByDateDesc, sortingByTitle } from "../../utils/sorting-methods";
 
 import "./styles.css";
@@ -14,12 +14,12 @@ export interface IMeeting {
 }
 
 export function Agenda() {
-  // const meetingsStored = [];
   const storage = localStorage.getItem("meetings");
-  const meetingsStored: IMeeting[] = storage ? JSON.parse(storage) : [];
 
-  const [meetings, setMeetings] = useState<IMeeting[]>(meetingsStored);
+  const [meetings, setMeetings] = useState<IMeeting[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortingBy, setSortingBy] = useState<"title" | "dateStart" | "dateEnd">("title");
+  const [search, setSearch] = useState("");
 
   const sortMethods = {
     title: sortingByTitle,
@@ -27,8 +27,15 @@ export function Agenda() {
     dateEnd: sortingByDateDesc
   }
 
+  useEffect(() => {
+    const meetingsStored: IMeeting[] = storage ? JSON.parse(storage) : [];
+
+    setMeetings(meetingsStored);
+  }, [storage]);
+
   function searchMeetings(e: React.ChangeEvent<HTMLInputElement>) {
-    setMeetings(meetingsStored.filter(meeting => meeting.title.toLowerCase().includes(e.target.value.toLowerCase())));
+    // setMeetings(meetingsStored;
+    setSearch(e.target.value);
   }
 
   function removeAMeeting(id: string) {
@@ -42,14 +49,14 @@ export function Agenda() {
   }
 
   return (
-    <div className="agenda-container">
-      <Link
-        to="/schedule"
+    <main className="agenda-container">
+      <button
+        onClick={() => setIsModalOpen(true)}
         className="agenda-scheduleButton"
       >
         Novo agendamento&nbsp;
         <PlusCircle />
-      </Link>
+      </button>
 
       <input
         className="agenda-searchBar"
@@ -80,19 +87,26 @@ export function Agenda() {
       </div>
 
       <div className="agenda-list">
-        {meetings.sort(sortMethods[sortingBy]).map(meeting => {
-          return (
-            <div key={meeting.id} className="agenda-item">
-              {meeting.title}
-              <span> {dayjs(meeting.startDate).format("DD/MM/YY[ - ]HH:mm")} | {dayjs(meeting.endDate).format("DD/MM/YY[ - ]HH:mm")} </span>
-              <div className="agenda-itemButtons">
-                <button><PencilSimple /></button>
-                <button onClick={() => removeAMeeting(meeting.id)}><Trash /></button>
+        {meetings
+          .sort(sortMethods[sortingBy])
+          .filter(meeting => meeting.title.toLowerCase().includes(search.toLowerCase()))
+          .map(meeting => {
+            return (
+              <div key={meeting.id} className="agenda-item">
+                <span title={meeting.title}>
+                  {meeting.title}
+                </span>
+                <span> {dayjs(meeting.startDate).format("DD/MM/YY[ - ]HH:mm")} | {dayjs(meeting.endDate).format("DD/MM/YY[ - ]HH:mm")} </span>
+                <div className="agenda-itemButtons">
+                  <button><PencilSimple /></button>
+                  <button onClick={() => removeAMeeting(meeting.id)}><Trash /></button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
-    </div>
+
+      {isModalOpen && (<ScheduleModal meetingsArray={meetings} handleCloseModal={() => setIsModalOpen(false)} />)}
+    </main>
   );
 }
