@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { PencilSimple, PlusCircle, Trash } from "phosphor-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScheduleModal } from "../../components/ScheduleModal";
 import { sortingByDateAsc, sortingByDateDesc, sortingByTitle } from "../../utils/sorting-methods";
 
@@ -14,9 +14,12 @@ export interface IMeeting {
 }
 
 export function Agenda() {
-  const storage = localStorage.getItem("meetings");
+  const [meetings, setMeetings] = useState<IMeeting[]>(() => {
+    const storage = localStorage.getItem("meetings");
+    const meetingsStored: IMeeting[] = storage ? JSON.parse(storage) : [];
 
-  const [meetings, setMeetings] = useState<IMeeting[]>([]);
+    return meetingsStored;
+  });
   const [meetingToEdit, setMeetingToEdit] = useState<IMeeting | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortingBy, setSortingBy] = useState<"title" | "dateStart" | "dateEnd">("title");
@@ -28,20 +31,12 @@ export function Agenda() {
     dateEnd: sortingByDateDesc
   }
 
-  useEffect(() => {
-    const meetingsStored: IMeeting[] = storage ? JSON.parse(storage) : [];
-
-    setMeetings(meetingsStored);
-  }, [storage]);
 
   function removeAMeeting(id: string) {
-    const storage = localStorage.getItem("meetings");
-    let storedMeetings = storage ? JSON.parse(storage) : [];
+    const meetingsFiltered = meetings.filter((meeting: IMeeting) => meeting.id !== id);
 
-    storedMeetings = storedMeetings.filter((meeting: IMeeting) => meeting.id !== id);
-
-    setMeetings(storedMeetings);
-    localStorage.setItem("meetings", JSON.stringify(storedMeetings));
+    setMeetings(meetingsFiltered);
+    localStorage.setItem("meetings", JSON.stringify(meetingsFiltered));
   }
 
   function openEditModal(meeting: IMeeting) {
