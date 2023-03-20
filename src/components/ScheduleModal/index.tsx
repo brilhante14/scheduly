@@ -1,10 +1,10 @@
 import { TextField } from "@mui/material";
 import { DateTimeValidationError, TimePickerProps } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { v4 as uuidv4 } from 'uuid';
 import dayjs, { Dayjs } from "dayjs";
 import { CalendarBlank } from "phosphor-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { IMeeting } from "../../pages/Agenda";
 
 import "./styles.css";
