@@ -1,4 +1,4 @@
-.confirmSchedule-container {
+.modal-container {
   width: 100vw;
   height: 100vh;
   z-index: 0;
@@ -11,7 +11,7 @@
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.confirmSchedule-form{
+.modal-content{
   position: fixed;
   top: 50%;
   left: 50%;
@@ -24,38 +24,21 @@
 
   margin: 1.5rem auto 0;
   gap: 1rem;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 6px;
 
   background-color: #A9A9B2;
   color: #121214;
 }  
-    
-.confirmSchedule-header{
-  display: flex;
-  align-items: center;
-  
-  gap: 1rem;
-  padding-bottom: 1.5rem;
-  margin-bottom: 0.5rem;
-  
-  border-bottom: 1px solid #323238;
-}
 
-.confirmSchedule-header p svg {
-  color: #A9A9B2;
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.confirmSchedule-formActions {
+.modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.confirmSchedule-formActions button {
+.modal-actions button {
   padding: 0.55rem;
   border: 1px solid #7C7C8A;
 
@@ -66,15 +49,15 @@
   transition: 0.5s;
 }
 
-.confirmSchedule-formActions button:hover {
+.modal-actions button:hover {
   background-color: #b90e0a;
   color: #fff;
 }
 
-.confirmSchedule-formActions button[type=submit]:hover {
+.modal-actions button[type=submit]:hover {
   background-color: #00875F;
 }
 
-.confirmSchedule-formActions button:disabled {
+.modal-actions button:disabled {
   opacity: 0.7;
 }

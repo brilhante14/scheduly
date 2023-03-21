@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import { ArrowDown, ArrowUp, PencilSimple, PlusCircle, Trash } from "phosphor-react";
 import { useState } from "react";
-import { ScheduleModal } from "../../components/ScheduleModal";
+import { ConfirmDeletionModal } from "../../components/Modal/ConfirmDeletionModal";
+import { ScheduleModal } from "../../components/Modal/ScheduleModal";
 import { sortingByDateAsc, sortingByDateDesc, sortingByTitleAsc, sortingByTitleDesc } from "../../utils/sorting-methods";
 
 import "./styles.css";
@@ -25,27 +26,32 @@ export function Agenda() {
 
     return meetingsStored;
   });
-  const [meetingToEdit, setMeetingToEdit] = useState<IMeeting | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sorting, setSorting] = useState<ISorting>({ sortBy: "title", sortOrder: "ASC" });
+
   const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<ISorting>({ sortBy: "title", sortOrder: "ASC" });
+
+  const [idToDelete, setIdToDelete] = useState("");
+  const [meetingToEdit, setMeetingToEdit] = useState<IMeeting | null>(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   const sortMethods = {
     title: sorting.sortOrder === "ASC" ? sortingByTitleAsc : sortingByTitleDesc,
     date: sorting.sortOrder === "ASC" ? sortingByDateAsc : sortingByDateDesc,
   }
 
-  function removeAMeeting(id: string) {
-    const meetingsFiltered = meetings.filter((meeting: IMeeting) => meeting.id !== id);
-
-    setMeetings(meetingsFiltered);
-    localStorage.setItem("meetings", JSON.stringify(meetingsFiltered));
-  }
-
   function openEditModal(meeting: IMeeting) {
     setMeetingToEdit(meeting);
 
-    setIsModalOpen(true);
+    setIsScheduleModalOpen(true);
+  }
+
+  function removeAMeeting() {
+    const meetingsFiltered = meetings.filter((meeting: IMeeting) => meeting.id !== idToDelete);
+
+    setMeetings(meetingsFiltered);
+    localStorage.setItem("meetings", JSON.stringify(meetingsFiltered));
+
+    setIdToDelete("");
   }
 
   function sortMeetings(sortBy: "title" | "date") {
@@ -64,7 +70,7 @@ export function Agenda() {
   return (
     <main className="agenda-container">
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => setIsScheduleModalOpen(true)}
         className="agenda-scheduleButton"
       >
         Novo agendamento&nbsp;
@@ -112,21 +118,28 @@ export function Agenda() {
                 <span> {dayjs(meeting.startDate).format("DD/MM/YY[ - ]HH:mm")} | {dayjs(meeting.endDate).format("DD/MM/YY[ - ]HH:mm")} </span>
                 <div className="agenda-itemButtons">
                   <button onClick={() => openEditModal(meeting)}><PencilSimple /></button>
-                  <button onClick={() => removeAMeeting(meeting.id)}><Trash /></button>
+                  <button onClick={() => setIdToDelete(meeting.id)}><Trash /></button>
                 </div>
               </div>
             );
           })}
       </div>
 
-      {isModalOpen && (
+      {isScheduleModalOpen && (
         <ScheduleModal
           editInfo={meetingToEdit}
           meetingsArray={meetings}
           handleCloseModal={() => {
             setMeetingToEdit(null);
-            setIsModalOpen(false);
+            setIsScheduleModalOpen(false);
           }}
+        />
+      )}
+
+      {idToDelete && (
+        <ConfirmDeletionModal
+          confirmDeletion={removeAMeeting}
+          handleCloseModal={() => setIdToDelete("")}
         />
       )}
     </main>

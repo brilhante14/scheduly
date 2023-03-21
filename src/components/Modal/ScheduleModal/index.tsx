@@ -5,9 +5,10 @@ import dayjs, { Dayjs } from "dayjs";
 import { CalendarBlank } from "phosphor-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { IMeeting } from "../../pages/Agenda";
+import { IMeeting } from "../../../pages/Agenda";
 
 import "./styles.css";
+import "../modal-styles.css";
 
 interface IScheduleModalProps {
   meetingsArray: IMeeting[];
@@ -97,8 +98,8 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
     !dayjs(scheduleForm.endDate).isValid() || !dayjs(scheduleForm.startDate).isValid();
 
   return (
-    <div className="confirmSchedule-container">
-      <form className="confirmSchedule-form" onSubmit={scheduleAMeeting}>
+    <div className="modal-container">
+      <form className="modal-content" onSubmit={scheduleAMeeting}>
         <div className="confirmSchedule-header">
           <CalendarBlank />
           Preencha todos os campos
@@ -140,7 +141,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
           }}
         />
 
-        <div className="confirmSchedule-formActions">
+        <div className="modal-actions">
           <button type="button" onClick={handleCloseModal}>Cancelar</button>
 
           <button
