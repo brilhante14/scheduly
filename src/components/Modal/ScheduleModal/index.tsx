@@ -27,7 +27,7 @@ export function ScheduleModal({ editInfo, meetingsArray, handleCloseModal }: ISc
   });
 
   const checkMeetingConflicts = (date: Dayjs) => {
-    return meetingsArray.some(meeting => date.isBefore(meeting.endDate) && date.isAfter(meeting.startDate));
+    return meetingsArray.some(meeting => meeting.id !== editInfo?.id && date.isBefore(meeting.endDate) && date.isAfter(meeting.startDate));
   }
 
   const isBeforeStart = (date: Dayjs) => {
