@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import { PencilSimple, PlusCircle, Trash } from "phosphor-react";
+import { ArrowDown, ArrowUp, PencilSimple, PlusCircle, Trash } from "phosphor-react";
 import { useState } from "react";
 import { ScheduleModal } from "../../components/ScheduleModal";
-import { sortingByDateAsc, sortingByDateDesc, sortingByTitle } from "../../utils/sorting-methods";
+import { sortingByDateAsc, sortingByDateDesc, sortingByTitleAsc, sortingByTitleDesc } from "../../utils/sorting-methods";
 
 import "./styles.css";
 
@@ -11,6 +11,11 @@ export interface IMeeting {
   title: string;
   startDate: Date | null;
   endDate: Date | null;
+}
+
+interface ISorting {
+  sortBy: "title" | "date";
+  sortOrder: "ASC" | "DESC";
 }
 
 export function Agenda() {
@@ -22,15 +27,13 @@ export function Agenda() {
   });
   const [meetingToEdit, setMeetingToEdit] = useState<IMeeting | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortingBy, setSortingBy] = useState<"title" | "dateStart" | "dateEnd">("title");
+  const [sorting, setSorting] = useState<ISorting>({ sortBy: "title", sortOrder: "ASC" });
   const [search, setSearch] = useState("");
 
   const sortMethods = {
-    title: sortingByTitle,
-    dateStart: sortingByDateAsc,
-    dateEnd: sortingByDateDesc
+    title: sorting.sortOrder === "ASC" ? sortingByTitleAsc : sortingByTitleDesc,
+    date: sorting.sortOrder === "ASC" ? sortingByDateAsc : sortingByDateDesc,
   }
-
 
   function removeAMeeting(id: string) {
     const meetingsFiltered = meetings.filter((meeting: IMeeting) => meeting.id !== id);
@@ -43,6 +46,19 @@ export function Agenda() {
     setMeetingToEdit(meeting);
 
     setIsModalOpen(true);
+  }
+
+  function sortMeetings(sortBy: "title" | "date") {
+    setSorting(prevState => (
+      { sortBy, sortOrder: prevState.sortOrder === "ASC" ? "DESC" : "ASC" }
+    ))
+  }
+
+  function ordenationArrow() {
+    return sorting.sortOrder === "ASC" ?
+      <ArrowUp />
+      :
+      <ArrowDown />
   }
 
   return (
@@ -64,28 +80,28 @@ export function Agenda() {
       <div className="agenda-orderContainer">
         Ordenar por:
         <button
-          className={sortingBy === "title" ? "selected" : ""}
-          onClick={() => setSortingBy("title")}
+          className={sorting.sortBy === "title" ? "selected" : ""}
+          onClick={() => sortMeetings("title")}
         >
-          Título
+          Título&nbsp;
+          {
+            sorting.sortBy === "title" && ordenationArrow()
+          }
         </button>
         <button
-          className={sortingBy === "dateStart" ? "selected" : ""}
-          onClick={() => setSortingBy("dateStart")}
+          className={sorting.sortBy === "date" ? "selected" : ""}
+          onClick={() => sortMeetings("date")}
         >
-          Data de início
-        </button>
-        <button
-          className={sortingBy === "dateEnd" ? "selected" : ""}
-          onClick={() => setSortingBy("dateEnd")}
-        >
-          Data de fim
+          Data&nbsp;
+          {
+            sorting.sortBy === "date" && ordenationArrow()
+          }
         </button>
       </div>
 
       <div className="agenda-list">
         {meetings
-          .sort(sortMethods[sortingBy])
+          .sort(sortMethods[sorting.sortBy])
           .filter(meeting => meeting.title.toLowerCase().includes(search.toLowerCase()))
           .map(meeting => {
             return (
