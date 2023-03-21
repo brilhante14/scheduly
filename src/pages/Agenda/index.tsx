@@ -110,14 +110,15 @@ export function Agenda() {
           .sort(sortMethods[sorting.sortBy])
           .filter(meeting => meeting.title.toLowerCase().includes(search.toLowerCase()))
           .map(meeting => {
+            const isConcluded = dayjs(meeting.endDate).isBefore(new Date());
             return (
-              <div key={meeting.id} className="agenda-item">
+              <div key={meeting.id} className={`agenda-item ${isConcluded && "agenda-item-concluded"}`}>
                 <span title={meeting.title}>
                   {meeting.title}
                 </span>
                 <span> {dayjs(meeting.startDate).format("DD/MM/YY[ - ]HH:mm")} | {dayjs(meeting.endDate).format("DD/MM/YY[ - ]HH:mm")} </span>
                 <div className="agenda-itemButtons">
-                  <button onClick={() => openEditModal(meeting)}><PencilSimple /></button>
+                  {!isConcluded && <button onClick={() => openEditModal(meeting)}><PencilSimple /></button>}
                   <button onClick={() => setIdToDelete(meeting.id)}><Trash /></button>
                 </div>
               </div>

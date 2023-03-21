@@ -90,8 +90,6 @@
   border-radius: 6px;
   font-size: 0.875rem;
 
-  /* text-over */
-  
   background-color: #202024;
   color: #fff;
 }
@@ -101,6 +99,10 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.agenda-item-concluded {
+  opacity: 0.7;
 }
 
 .agenda-itemButtons {
